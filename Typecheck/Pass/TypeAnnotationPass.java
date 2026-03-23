@@ -6,6 +6,13 @@ import Typecheck.TypeCheckException;
 
 public class TypeAnnotationPass extends Pass<Void> {
 
+
+   // NOTES:
+   // This pass assigns Typecheck.Type classes to the typeAnnotation field of the parent Absyn class
+   // foreach node in the AST that is a variable decleration.
+   // POINTER,LIST,ARRAY are compound types, POINTERs are of a specific type,
+   // and ARRAYs and LISTs are mutlidimensional.
+
     // Hint: Build the base type from the name, then wrap it for pointers and any [] modifiers.
     // 1. Construct the base type ("string" -> STRING)
     // 2. Wrap the base type in a POINTER Type if stars count > 0
@@ -39,24 +46,39 @@ public class TypeAnnotationPass extends Pass<Void> {
       if (!isARRAY && !isLIST && node.brackets.list.size() != 0) 
          throw new TypeCheckException("Array has invalid parameters in []");
 
-
+      //Construct base type
       Type basetype = node.name.equals("int") ? new INT() :
                   node.name.equals("string") ? new STRING() :
                   node.name.equals("void") ? new VOID() :
                   new ALIAS(node.name);
 
+      //Might need to assign a real type value to an Alias here, maybe this is done later in typescope pass
+
+      //Wrap in POINTER if necessary
       if(node.pointerCount>0){
          basetype = (Type) new POINTER(basetype);
       }
 
-      if(isARRAY){
-         basetype = (Type)new ARRAY(basetype);
-      } else if(isLIST){
-         ArrayList<Type> typeList = new ArrayList();
-         typeList.add(basetype);
-         basetype = (Type)new LIST(typeList);
-      }
+     if(isARRAY){
+        for(Absyn.Decl bracket : node.brackets.list){
+           basetype = (Type) new ARRAY(basetype);
+        }
+     }
 
+     else if(isLIST){
+        ArrayList<Absyn.Decl> brackets = node.brackets.list;
+        for(Absyn.Decl bracket: brackets){
+            Absyn.DecLit lit = (Absyn.DecLit)((Absyn.ArrayType)bracket).size;
+            int num = lit.value;
+            ArrayList<Type> typelist = new ArrayList<>();
+            for(int i = 0;i<num;i++){
+                typelist.add(basetype);
+            }
+            basetype = new LIST(typelist);
+        }
+     }
+     
+     //Annoate node with corresponding Type
       node.typeAnnotation = basetype;
 
       return null;
