@@ -20,6 +20,7 @@ public class CreateScopePass extends Pass<Void> {
 // 5. Restore the previous scope.
    @Override
    public Void visitFunDecl(FunDecl node) {
+       return null;
    }
 // Hint: Struct bodies are evaluated inside their own scope.
 // 1. Create a new Scope whose parent is the current scope.
@@ -29,6 +30,7 @@ public class CreateScopePass extends Pass<Void> {
 // 5. Restore the previous scope.
    @Override
 	public Void visitStructDecl(StructDecl node) {
+       return null;
 	}
 // Hint: Union bodies behave like structs for scoping.
 // 1. Create a new Scope whose parent is the current scope.
@@ -38,6 +40,7 @@ public class CreateScopePass extends Pass<Void> {
 // 5. Restore the previous scope.
 	@Override
 	public Void visitUnionDecl(UnionDecl node) {
+        return null;
 	}
 // Hint: If statements execute inside a fresh scope.
 // 1. Create a new Scope whose parent is the current scope.
@@ -47,6 +50,7 @@ public class CreateScopePass extends Pass<Void> {
 // 5. Restore the previous scope.
 	@Override
 	public Void visitIfStmt(IfStmt node) {
+        return null;
 	}
 // Hint: Loops also introduce a nested scope.
 // 1. Create a new Scope whose parent is the current scope.
@@ -56,6 +60,7 @@ public class CreateScopePass extends Pass<Void> {
 // 5. Restore the previous scope.
    @Override
 	public Void visitWhileStmt(WhileStmt node) {
+       return null;
 	}
 
 }

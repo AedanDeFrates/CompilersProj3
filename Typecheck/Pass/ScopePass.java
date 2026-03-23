@@ -15,22 +15,27 @@ public class ScopePass<T> extends Pass<T> {
 
    @Override
    public T visitFunDecl(FunDecl node) {
+	   return null;
    }
 
    @Override
 	public T visitStructDecl(StructDecl node) {
+	   return null;
 	}
 
 	@Override
 	public T visitUnionDecl(UnionDecl node) {
+		return null;
 	}
 
 	@Override
 	public T visitIfStmt(IfStmt node) {
+		return null;
 	}
 
    @Override
 	public T visitWhileStmt(WhileStmt node) {
+	   return null;
 	}
 
 }
