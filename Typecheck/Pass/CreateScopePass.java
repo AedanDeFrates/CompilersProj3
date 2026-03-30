@@ -30,7 +30,7 @@ public class CreateScopePass extends Pass<Void> {
 
         Scope newScope = new Scope(currentscope);
         Scope prev = currentscope;
-        currentscope = funcScope;
+        currentscope = newScope;
 
         visit(node.type);
         for(Decl paremeter: node.params.list){
@@ -38,7 +38,7 @@ public class CreateScopePass extends Pass<Void> {
         }
         visit(node.body);
 
-        node.scope = funcScope;
+        node.scope = newScope;
         currentscope = prev;
 
         return null;
