@@ -23,7 +23,7 @@ public class Main {
         ASTBuilder astBuilder = new ASTBuilder();
 
         Absyn.DeclList asttree = (Absyn.DeclList)astBuilder.visit(tree);
-        System.out.println(asttree.print(0));
+        //System.out.println(asttree.print(0));
 
         try {
             // Passes

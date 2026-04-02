@@ -26,7 +26,7 @@ public class ScopePass<T> extends Pass<T> {
    }
 
    @Override
-	public T visitStructDecl(StructDecl node)
+	public T visitStructDecl(StructDecl node){
 		Scope prevscope = currentscope;
 		currentscope = node.scope;
 
