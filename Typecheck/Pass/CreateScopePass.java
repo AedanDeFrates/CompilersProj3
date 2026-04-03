@@ -29,6 +29,7 @@ public class CreateScopePass extends Pass<Void> {
    @Override
    public Void visitFunDecl(FunDecl node)
    {
+      System.out.println("visitFunDecl\n" + "   " + node.name);
 
       Scope newScope = new Scope(currentscope);
       Scope prev = currentscope;
@@ -57,6 +58,8 @@ public class CreateScopePass extends Pass<Void> {
    @Override
 	public Void visitStructDecl(StructDecl node) 
    {
+      System.out.println("visitStructDecl\n" + "   " + node.name);
+
       Scope structScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = structScope;
@@ -81,6 +84,8 @@ public class CreateScopePass extends Pass<Void> {
 	@Override
 	public Void visitUnionDecl(UnionDecl node) 
    {
+      System.out.println("visitUnionDecl\n" + "   " + node.name);
+
       Scope unionScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = unionScope;
@@ -105,6 +110,8 @@ public class CreateScopePass extends Pass<Void> {
 	@Override
 	public Void visitIfStmt(IfStmt node) 
    {
+      System.out.println("visitIfStmt\n" + "   IF");
+
       Scope ifScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = ifScope;
@@ -128,6 +135,8 @@ public class CreateScopePass extends Pass<Void> {
    @Override
 	public Void visitWhileStmt(WhileStmt node) 
    {
+      System.out.println("visitWhileStmt\n" + "   WHILE");
+      
       Scope whileScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = whileScope;
@@ -138,6 +147,5 @@ public class CreateScopePass extends Pass<Void> {
       node.scope = whileScope;
       currentscope = prev;
       return null;
-
 	}
 }
