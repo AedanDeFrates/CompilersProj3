@@ -27,14 +27,23 @@ public class Main {
 
         try {
             // Passes
+            System.out.println("\n==========TYPE_PASS==========");
             TypeAnnotationPass tap = new TypeAnnotationPass();
             asttree.accept(tap);
+
+            System.out.println("\n==========SCOPE_PASS==========");
             CreateScopePass scp = new CreateScopePass();
             asttree.accept(scp);
+
+            System.out.println("\n==========TYPE_SCOPE_PASS==========");
             TypeScopePass tcp = new TypeScopePass(scp.globalscope);
             asttree.accept(tcp);
+
+            System.out.println("\n==========FUN_AND_VAR_SCOPE_PASS==========");
             FunAndVarScopePass fvcp = new FunAndVarScopePass(scp.globalscope);
             asttree.accept(fvcp);
+
+            System.out.println("\n==========JUDGEMENT_PASS==========");
             JudgementsPass jp = new JudgementsPass(scp.globalscope);
             asttree.accept(jp);
             System.out.println("Type Check Passed!");

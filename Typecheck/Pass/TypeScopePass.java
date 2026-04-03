@@ -16,11 +16,12 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitStructDecl(Absyn.StructDecl node) 
    {
-      System.out.println("visitStructDecl");
+      System.out.println("visitStructDecl\n" + "   " + node.name);
       // 1.
       for(Absyn.Decl d: node.body.list)
       {
          visit(d);
+         System.out.println("      MEMBER VISITED");
       }
       
       // 2.
@@ -50,11 +51,12 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitUnionDecl(Absyn.UnionDecl node) 
    {
-      System.out.println("visitUnionDecl");
+      System.out.println("visitUnionDecl\n" + "   " + node.name);
       // 1.
       for(Absyn.Decl d : node.body.list)
       {
          visit(d);
+         System.out.println("      MEMBER VISITED");
       }
 
       // 2.
@@ -84,6 +86,7 @@ public class TypeScopePass extends ScopePass<Void> {
    {
 		return null;
 	}
+
    // Hint: Replace ALIAS types with their real definition.
    // Remember that Types can be nested (IE ARRAY(ARRAY(ARRAY(...))) )
    // Traverse the whole type to search for Aliases. Once an alias is found,

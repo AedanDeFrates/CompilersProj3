@@ -17,7 +17,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override 
    public Void visitParameter(Absyn.Parameter node)
    {
-      System.out.println("visitParameter");
+      System.out.println("visitParameter\n" + "   " + node.name);
       // Here is some code I used. You might find it useful:
       // 1.
       if (this.currentscope.hasLocalFun(node.name)) {
@@ -42,7 +42,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitFunDecl(Absyn.FunDecl node) {
       
-      System.out.println("visitFuncDecl");
+      System.out.println("visitFuncDecl\n" + "   " + node.name);
       // 1.
       if (this.currentscope.hasLocalVar(node.name))
       {
@@ -81,7 +81,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitStructMember(Absyn.StructMember node) 
    {
-      System.out.println("visitStructMember");
+      System.out.println("visitStructMember\n" + "   " + node.name);
 
       // 1.
       if (this.currentscope.hasLocalFun(node.name))
@@ -106,7 +106,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitUnionMember(Absyn.UnionMember node) 
    {
-      System.out.println("visitUnionMember");
+      System.out.println("visitUnionMember\n" + "   " + node.name);
 
       // 1.
       if (this.currentscope.hasLocalFun(node.name))
@@ -127,7 +127,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitVarDecl(Absyn.VarDecl node) 
    {
-      System.out.println("visitVarDecl");
+      System.out.println("visitVarDecl\n" + "   " + node.name);
 
       // 1.
       if (this.currentscope.hasLocalFun(node.name))
