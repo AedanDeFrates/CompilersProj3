@@ -50,10 +50,12 @@ public class ScopePass<T> extends Pass<T> {
 
 		currentscope = prevScope;
 
+
 		return null;
 	}
 
 	@Override
+
 	public T visitUnionDecl(UnionDecl node) 
 	{
 		Scope prevScope = currentscope;

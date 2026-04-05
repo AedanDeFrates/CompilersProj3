@@ -31,9 +31,9 @@ public class CreateScopePass extends Pass<Void> {
    {
       System.out.println("visitFunDecl\n" + "   " + node.name);
 
-      Scope newScope = new Scope(currentscope);
+      Scope funcScope = new Scope(currentscope);
       Scope prev = currentscope;
-      currentscope = newScope;
+      currentscope = funcScope;
 
       visit(node.type);
       for(Decl paremeter: node.params.list)
@@ -42,7 +42,7 @@ public class CreateScopePass extends Pass<Void> {
       }
       visit(node.body);
 
-      node.scope = newScope;
+      node.scope = funcScope;
       currentscope = prev;
 
       return null;

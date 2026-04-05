@@ -12,16 +12,19 @@ public class Main {
         gLexer lexer = new gLexer(input);
         //gLexer lexer = new gLexer(input);
 
-        CommonTokenStream tokens = new CommonTokenStream(lexer);      
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
 
 
-         System.out.println("Starting Parser");
+        System.out.println("Starting Parser");
         gParser parser = new gParser(tokens);
 
         ParseTree tree = parser.program();
 
         ASTBuilder astBuilder = new ASTBuilder();
-        Absyn.Absyn asttree = astBuilder.visit(tree);
+
+        Absyn.DeclList asttree = (Absyn.DeclList)astBuilder.visit(tree);
+        //System.out.println(asttree.print(0));
+
         try {
             // Passes
             System.out.println("\n==========TYPE_PASS==========");
