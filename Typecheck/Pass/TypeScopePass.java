@@ -63,9 +63,9 @@ public class TypeScopePass extends ScopePass<Void> {
       ArrayList<Typecheck.Types.Type> typeAnnotationList = new ArrayList<>();
       for (Absyn.Decl d : node.body.list)
       {
-         if(d instanceof Absyn.StructMember sm)
+         if(d instanceof Absyn.UnionMember um)
          {
-            typeAnnotationList.add(sm.typeAnnotation);
+            typeAnnotationList.add(um.typeAnnotation);
          }
       }
 
@@ -84,6 +84,9 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitTypedef(Absyn.Typedef node)
    {
+      visit(node.type);
+      VarSymbol sym = new VarSymbol(node.name, node.type.typeAnnotation);
+      this.currentscope.addVar(node.name, sym);
 		return null;
 	}
 
