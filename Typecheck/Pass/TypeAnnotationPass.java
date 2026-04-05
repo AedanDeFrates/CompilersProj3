@@ -71,8 +71,9 @@ public class TypeAnnotationPass extends Pass<Void> {
 
      else if(isLIST){
         ArrayList<Absyn.Decl> brackets = node.brackets.list;
-        for(Absyn.Decl bracket: brackets){
-            Absyn.DecLit lit = (Absyn.DecLit)((Absyn.ArrayType)bracket).size;
+        // Process brackets in reverse so int[3][2] produces LIST(3 x LIST(2 x INT))
+        for(int bi = brackets.size()-1; bi >= 0; bi--){
+            Absyn.DecLit lit = (Absyn.DecLit)((Absyn.ArrayType)brackets.get(bi)).size;
             int num = lit.value;
             ArrayList<Type> typelist = new ArrayList<>();
             for(int i = 0;i<num;i++){
@@ -87,4 +88,36 @@ public class TypeAnnotationPass extends Pass<Void> {
 
       return null;
    }
-} 
+
+   // Propagate the type annotation from the Absyn.Type child up to the declaration node.
+   // This is what FunAndVarScopePass and TypeScopePass read via node.typeAnnotation.
+
+   @Override
+   public Void visitVarDecl(Absyn.VarDecl node) {
+      visit(node.type);
+      node.typeAnnotation = node.type.typeAnnotation;
+      visit(node.init);
+      return null;
+   }
+
+   @Override
+   public Void visitParameter(Absyn.Parameter node) {
+      visit(node.type);
+      node.typeAnnotation = node.type.typeAnnotation;
+      return null;
+   }
+
+   @Override
+   public Void visitStructMember(Absyn.StructMember node) {
+      visit(node.type);
+      node.typeAnnotation = node.type.typeAnnotation;
+      return null;
+   }
+
+   @Override
+   public Void visitUnionMember(Absyn.UnionMember node) {
+      visit(node.type);
+      node.typeAnnotation = node.type.typeAnnotation;
+      return null;
+   }
+}
