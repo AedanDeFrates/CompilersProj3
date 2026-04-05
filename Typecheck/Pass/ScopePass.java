@@ -59,6 +59,7 @@ public class ScopePass<T> extends Pass<T> {
 		Scope prevScope = currentscope;
 		currentscope = node.scope;
 
+		System.out.println("SCOPE_PASS visitUnionDecl\n   " + node.name);
 		visit(node.body);
 
 		currentscope = prevScope;
