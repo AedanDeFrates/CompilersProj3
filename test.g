@@ -6,9 +6,18 @@ var ms n = "1";
 var ms m = {1,1}; 
 var A x = 2;
 
+
 fun ms main(ms n) {
    var int z;
    return x;
+
+   if (z < 5) {
+       return "";
+   } else {
+       return "";
+   }
+
+   while (z < 0) {
+       z = z + 1;
+   }
 } 
-
-

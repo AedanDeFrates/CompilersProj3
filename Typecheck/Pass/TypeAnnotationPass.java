@@ -39,7 +39,6 @@ public class TypeAnnotationPass extends Pass<Void> {
    public Void visitType(Absyn.Type node) {
 
       System.out.println("visitType");
-
       
        // Here is how I checked if the type needed ARRAY or a LIST:
        // Feel free to use it or change it. 
