@@ -13,65 +13,92 @@ public class ScopePass<T> extends Pass<T> {
       this.currentscope = s;
    }
 
+   // HINT FROM LINE 10
+   // 1. In new scope, set the scope to the current node scope
+   // 2. visit the children (body, params, members, etc) inside the new scope
+   // 3. restore the previous scope
+
    @Override
-   public T visitFunDecl(FunDecl node) {
-	   Scope prevscope = currentscope;
-	   currentscope = node.scope;
+   public T visitFunDecl(FunDecl node) 
+   {
+	// 1.
+	Scope prevScope = new Scope(currentscope);
+	currentscope = node.scope;
 
-	   visit(node.params);
-	   visit(node.body);
+	System.out.println("SCOPE_PASS visitFunDecl\n   " + node.name);
 
-	   currentscope=prevscope;
-	   return null;
+	// 2.
+	visit(node.params);
+	visit(node.body);
+
+	// 3.
+	currentscope = prevScope;
+
+	return null;
    }
 
+   //PATTERN REPEATS FOR REMAINING FUNCTIONS
    @Override
-	public T visitStructDecl(StructDecl node){
-		Scope prevscope = currentscope;
+	public T visitStructDecl(StructDecl node) 
+	{
+		Scope prevScope = currentscope;
 		currentscope = node.scope;
 
+		System.out.println("SCOPE_PASS visitStructDecl\n   " + node.name);
+	   	
 		visit(node.body);
 
-		currentscope=prevscope;
-		return null;
+		currentscope = prevScope;
 
-	}
 
-	@Override
-	public T visitUnionDecl(UnionDecl node) {
-
-		Scope prevscope = currentscope;
-		currentscope = node.scope;
-
-		visit(node.body);
-
-		currentscope=prevscope;
 		return null;
 	}
 
 	@Override
-	public T visitIfStmt(IfStmt node) {
 
-		Scope prevscope = currentscope;
+	public T visitUnionDecl(UnionDecl node) 
+	{
+		Scope prevScope = currentscope;
+		currentscope = node.scope;
+
+		System.out.println("SCOPE_PASS visitUnionDecl\n   " + node.name);
+		visit(node.body);
+
+		currentscope = prevScope;
+
+		return null;
+	}
+
+	@Override
+	public T visitIfStmt(IfStmt node) 
+	{
+		Scope prevScope = currentscope;
+		currentscope = node.scope;
+
+		visit(node.if_statement);
+		visit(node.else_statement);
+		visit(node.expression);
+
+		System.out.println("SCOPE_PASS visitIfStmt\n   IF");
+	   	
+		currentscope = prevScope;
+
+		return null;
+	}
+
+   @Override
+	public T visitWhileStmt(WhileStmt node) 
+	{
+		Scope prevScope = currentscope;
 		currentscope = node.scope;
 
 		visit(node.expression);
-		visit(node.if_statement);
-		visit(node.else_statement);
+		visit(node.statement);
 
-		currentscope=prevscope;
-		return null;
-	}
+		System.out.println("SCOPE_PASS visitWhileStmt\n   WHILE");
 
-   @Override
-	public T visitWhileStmt(WhileStmt node) {
-	   Scope prevscope = currentscope;
-	   currentscope = node.scope;
-
-	   visit(node.expression);
-	   visit(node.statement);
-
-	   currentscope=prevscope;
+		currentscope = prevScope;
+	   	
 	   return null;
 	}
 
