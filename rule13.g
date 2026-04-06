@@ -1,5 +1,6 @@
 // Fails
+
 fun int main() {
-    if ("fails") {return 0;}
+    if (s) {return 0;}
     return 1;
 }
