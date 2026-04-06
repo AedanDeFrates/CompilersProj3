@@ -16,7 +16,7 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitStructDecl(Absyn.StructDecl node) 
    {
-      System.out.println("visitStructDecl\n" + "   " + node.name);
+      System.out.println("TYPE_SCOPE_PASS visitStructDecl\n" + "   " + node.name);
       // 1.
       for(Absyn.Decl d: node.body.list)
       {
@@ -51,7 +51,7 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitUnionDecl(Absyn.UnionDecl node) 
    {
-      System.out.println("visitUnionDecl\n" + "   " + node.name);
+      System.out.println("TYPE_SCOPE_PASS visitUnionDecl\n" + "   " + node.name);
       // 1.
       for(Absyn.Decl d : node.body.list)
       {
