@@ -1,4 +1,4 @@
-//var int[3][3] b = {{1,2,3},{1,2,3}} // Bugged Error Message
+var int[3][3] b = {{1,2,3},{1,2,3}, {2, 2, 1}}
 union ms { string x; int[] y; }
 
 typedef int A;
@@ -20,4 +20,4 @@ fun ms main(ms n) {
    while (z < 0) {
        z = z + 1;
    }
-} 
+}
