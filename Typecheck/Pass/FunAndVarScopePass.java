@@ -17,7 +17,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override 
    public Void visitParameter(Absyn.Parameter node)
    {
-      System.out.println("FUN_AND_VAR_SCOPE_PASS visitParameter\n" + "   " + node.name);
+      System.out.println("visitParameter\n" + "   " + node.name);
       // Here is some code I used. You might find it useful:
       // 1.
       if (this.currentscope.hasLocalFun(node.name)) {
@@ -42,7 +42,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitFunDecl(Absyn.FunDecl node) {
       
-      System.out.println("FUN_AND_VAR_SCOPE_PASS visitFuncDecl\n" + "   " + node.name);
+      System.out.println("visitFuncDecl\n" + "   " + node.name);
       // 1.
       if (this.currentscope.hasLocalVar(node.name))
       {
@@ -66,7 +66,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
 
       // 5.
       Scope oldScope = this.currentscope;
-      this.currentscope = new Scope(this.currentscope);
+      this.currentscope = node.scope;
       node.params.accept(this);
       node.body.accept(this);
       this.currentscope = oldScope;
@@ -81,7 +81,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitStructMember(Absyn.StructMember node) 
    {
-      System.out.println("FUN_AND_VAR_SCOPE_PASS visitStructMember\n" + "   " + node.name);
+      System.out.println("visitStructMember\n" + "   " + node.name);
 
       // 1.
       if (this.currentscope.hasLocalFun(node.name))
@@ -106,7 +106,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitUnionMember(Absyn.UnionMember node) 
    {
-      System.out.println("FUN_AND_VAR_SCOPE_PASS visitUnionMember\n" + "   " + node.name);
+      System.out.println("visitUnionMember\n" + "   " + node.name);
 
       // 1.
       if (this.currentscope.hasLocalFun(node.name))
@@ -127,7 +127,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
    @Override
    public Void visitVarDecl(Absyn.VarDecl node) 
    {
-      System.out.println("FUN_AND_VAR_SCOPE_PASS visitVarDecl\n" + "   " + node.name);
+      System.out.println("visitVarDecl\n" + "   " + node.name);
 
       // 1.
       if (this.currentscope.hasLocalFun(node.name))

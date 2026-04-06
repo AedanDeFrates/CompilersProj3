@@ -29,16 +29,16 @@ public class CreateScopePass extends Pass<Void> {
    @Override
    public Void visitFunDecl(FunDecl node)
    {
-      System.out.println("CREATE_SCOPE_PASS visitFunDecl\n" + "   " + node.name);
+      System.out.println("visitFunDecl\n" + "   " + node.name);
 
       Scope funcScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = funcScope;
 
       visit(node.type);
-      for(Decl paremeter: node.params.list)
+      for(Decl parameter: node.params.list)
       {
-         visit(paremeter);
+         visit(parameter);
       }
       visit(node.body);
 
@@ -58,15 +58,15 @@ public class CreateScopePass extends Pass<Void> {
    @Override
 	public Void visitStructDecl(StructDecl node) 
    {
-      System.out.println("CREATE_SCOPE_PASS visitStructDecl\n" + "   " + node.name);
+      System.out.println("visitStructDecl\n" + "   " + node.name);
 
       Scope structScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = structScope;
 
-      for(Decl paremeter: node.body.list)
+      for(Decl parameter: node.body.list)
          {
-         visit(paremeter);
+         visit(parameter);
       }
 
       node.scope = structScope;
@@ -84,15 +84,15 @@ public class CreateScopePass extends Pass<Void> {
 	@Override
 	public Void visitUnionDecl(UnionDecl node) 
    {
-      System.out.println("CREATE_SCOPE_PASS visitUnionDecl\n" + "   " + node.name);
+      System.out.println("visitUnionDecl\n" + "   " + node.name);
 
       Scope unionScope = new Scope(currentscope);
       Scope prev = currentscope;
       currentscope = unionScope;
 
-      for(Decl paremeter: node.body.list)
+      for(Decl parameter: node.body.list)
       {
-         visit(paremeter);
+         visit(parameter);
       }
 
       node.scope = unionScope;
@@ -110,7 +110,7 @@ public class CreateScopePass extends Pass<Void> {
 	@Override
 	public Void visitIfStmt(IfStmt node) 
    {
-      System.out.println("CREATE_SCOPE_PASS visitIfStmt\n" + "   IF");
+      System.out.println("visitIfStmt\n" + "   IF");
 
       Scope ifScope = new Scope(currentscope);
       Scope prev = currentscope;
@@ -135,7 +135,7 @@ public class CreateScopePass extends Pass<Void> {
    @Override
 	public Void visitWhileStmt(WhileStmt node) 
    {
-      System.out.println("CREATE_SCOPE_PASS visitWhileStmt\n" + "   WHILE");
+      System.out.println("visitWhileStmt\n" + "   WHILE");
       
       Scope whileScope = new Scope(currentscope);
       Scope prev = currentscope;
