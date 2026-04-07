@@ -4,6 +4,9 @@ import Typecheck.SymbolTable.*;
 import Typecheck.TypeCheckException;
 import java.util.ArrayList;
 
+import Absyn.IfStmt;
+import Absyn.WhileStmt;
+
 // This pass implements the type rules.
 // Some of the logic has been implemented for you in the Types.
 // Check out the "canAccept" functions.
@@ -224,8 +227,48 @@ public class JudgementsPass extends ScopePass<Void> {
    }
 
    @Override
-   public Void visitAssignExp(Absyn.AssignExp node) {
-      typeOf(node);
+   public Void visitFunDecl(Absyn.FunDecl node)
+   {
+      System.out.println("JUDGEMENT_PASS visitFunDecl\n   " + node.name);
+      // Rule 11: 
+      if (this.currentscope.hasVar(node.name))
+      {
+         throw new TypeCheckException("Tried to define fun ("+node.name+") but var with same name already exists");
+      }
+
+      visit(node.params);
+      visit(node.body);
+
+      return null;
+   }
+
+   @Override
+   public Void visitWhileStmt(WhileStmt node)
+   {
+      // RULE 13: 
+      if(node.expression.typeAnnotation == null)
+      {
+         throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
+      }
+      if(!(new INT().canAccept(node.expression.typeAnnotation)))
+      {
+         throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
+      }
+      return null;
+   }
+   @Override
+
+   public Void visitIfStmt(IfStmt node)
+   {
+      // RULE 13: 
+      if(node.expression.typeAnnotation == null)
+      {
+         throw new TypeCheckException("Invalid Expression Type when IF expects INT");
+      }
+      if(!(new INT().canAccept(node.expression.typeAnnotation)))
+      {
+         throw new TypeCheckException("Invalid Expression Type when IF expects INT");
+      }
       return null;
    }
 }

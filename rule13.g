@@ -1,4 +1,6 @@
 // Fails
-int main() {
-if ("fails") {...}
+
+fun int main() {
+    if (s) {return 0;}
+    return 1;
 }
