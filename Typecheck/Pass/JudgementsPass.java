@@ -61,6 +61,66 @@ public class JudgementsPass extends ScopePass<Void> {
       }
    }
 
+
+   // Rule 7: checks that an initializer for an array with empty brackets
+   // has a consistent nested shape and can match some concrete dimensions.
+   private boolean matchesListSize(Type declared, Type actual) {
+      //check to make sure both types exist
+      if (declared == null || actual == null) return false;
+
+      //call resolveAliases for both to get the type each represent so we can compare them
+      resolveAliases(declared);
+      resolveAliases(actual);
+
+      //check if both sides are lists
+      if (declared instanceof LIST && actual instanceof LIST) {
+         //cast them to list
+         LIST d = (LIST) declared;
+         LIST a = (LIST) actual;
+         //then check the size of each list (make sure they have the same number of elements)
+         if (d.typelist.size() != a.typelist.size()) {
+            return false;
+         }
+
+         //if list size matches, use for loop to recursively call function and check for each element
+         for (int i = 0; i < d.typelist.size(); i++) {
+            if (!matchesListSize(d.typelist.get(i), a.typelist.get(i))) {
+               return false;
+            }
+         }
+         return true;
+      }
+
+      // if the declared is an array and the actual is a list
+      if (declared instanceof ARRAY && actual instanceof LIST) {
+         //cast them to array and list
+         ARRAY arr = (ARRAY) declared;
+         LIST list = (LIST) actual;
+
+         //goes through every element to see if it matches the array type
+         for (Type elem : list.typelist) {
+            if (!matchesListSize(arr.type, elem)) {
+               return false;
+            }
+         }
+
+         //checks if there is more than one element
+         if (list.typelist.size() > 1) {
+            //if so, gets the first element to use as a reference to make sure the other elements match that shape
+            Type first = list.typelist.get(0);
+            for (int i = 1; i < list.typelist.size(); i++) {
+               if (!matchesListSize(first, list.typelist.get(i))) {
+                  return false;
+               }
+            }
+         }
+
+         return true;
+      }
+
+      return declared.canAccept(actual);
+   }
+
    // Compute the Typecheck.Types.Type of an expression.
    private Type typeOf(Absyn.Exp e) {
       if (e instanceof Absyn.EmptyExp) return null;
@@ -69,7 +129,12 @@ public class JudgementsPass extends ScopePass<Void> {
       if (e instanceof Absyn.ExpList) {
          ArrayList<Type> types = new ArrayList<>();
          for (Absyn.Exp sub : ((Absyn.ExpList) e).list) {
-            types.add(typeOf(sub));
+            Type subType = typeOf(sub);
+            if (subType == null) {
+               throw new TypeCheckException("Could not determine list element type");
+            }
+            resolveAliases(subType);
+            types.add(subType);
          }
          return new LIST(types);
       }
@@ -187,10 +252,6 @@ public class JudgementsPass extends ScopePass<Void> {
          return null;
       }
 
-      // Declared type is set on node.type by TypeAnnotationPass
-      if (declaredType == null) {
-         return null;
-      }
 
       // Resolve any ALIAS types (e.g., struct/union names) before calling canAccept
 
@@ -198,8 +259,10 @@ public class JudgementsPass extends ScopePass<Void> {
       // Compute the type of the initializer expression
       Type initType = typeOf(init);
       if (initType == null) {
-         // Cannot determine type yet (handled by later rules)
-         return null;
+         throw new TypeCheckException(
+                 "Could not determine initializer type for '" + node.name + "'"
+         );
+
       }
       resolveAliases(initType);
 
@@ -210,6 +273,16 @@ public class JudgementsPass extends ScopePass<Void> {
                  "Union '" + node.name +"' cannot be initialized with a list. Must be initialized with a single value."
          );
       }
+
+      if (initType instanceof LIST) {
+         if (!matchesListSize(declaredType, initType)) {
+            throw new TypeCheckException(
+                    "List initializer does not match declared type for '" + node.name + "'"
+            );
+         }
+         return null;
+      }
+
 
       // The canAccept methods encode Rules 1-4:
       //   Rule 1: INT.canAccept(STRING) == false, STRING.canAccept(INT) == false
@@ -227,10 +300,16 @@ public class JudgementsPass extends ScopePass<Void> {
    }
 
    @Override
+   public Void visitAssignExp(Absyn.AssignExp node) {
+      typeOf(node);
+      return null;
+   }
+
+   @Override
    public Void visitFunDecl(Absyn.FunDecl node)
    {
       System.out.println("JUDGEMENT_PASS visitFunDecl\n   " + node.name);
-      // Rule 11: 
+      // Rule 11:
       if (this.currentscope.hasVar(node.name))
       {
          throw new TypeCheckException("Tried to define fun ("+node.name+") but var with same name already exists");
@@ -245,7 +324,7 @@ public class JudgementsPass extends ScopePass<Void> {
    @Override
    public Void visitWhileStmt(WhileStmt node)
    {
-      // RULE 13: 
+      // RULE 13:
       if(node.expression.typeAnnotation == null)
       {
          throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
@@ -260,7 +339,7 @@ public class JudgementsPass extends ScopePass<Void> {
 
    public Void visitIfStmt(IfStmt node)
    {
-      // RULE 13: 
+      // RULE 13:
       if(node.expression.typeAnnotation == null)
       {
          throw new TypeCheckException("Invalid Expression Type when IF expects INT");
@@ -271,4 +350,6 @@ public class JudgementsPass extends ScopePass<Void> {
       }
       return null;
    }
+
+
 }
