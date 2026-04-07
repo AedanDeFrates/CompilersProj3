@@ -12,4 +12,9 @@ public class FunSymbol extends Symbol {
       this.params = l;
       this.returnType = r;
    }
+
+   @Override
+   public String toString(){
+      return String.format("(params: %s  return: %s)",params.toString(),returnType.toString());
+   }
 }

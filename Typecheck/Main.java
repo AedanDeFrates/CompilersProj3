@@ -10,10 +10,8 @@ public class Main {
         CharStream input = CharStreams.fromFileName(args[0]);
 
         gLexer lexer = new gLexer(input);
-        //gLexer lexer = new gLexer(input);
 
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-
 
         System.out.println("Starting Parser");
         gParser parser = new gParser(tokens);
@@ -43,9 +41,16 @@ public class Main {
             FunAndVarScopePass fvcp = new FunAndVarScopePass(scp.globalscope);
             asttree.accept(fvcp);
 
+            System.out.println("\n==========PRINT_PASS==========");
+            System.out.print("Global Scope ");
+            System.out.println(scp.globalscope);
+            PrintPass pp = new PrintPass(scp.globalscope);
+            asttree.accept(pp);
+
             System.out.println("\n==========JUDGEMENT_PASS==========");
             JudgementsPass jp = new JudgementsPass(scp.globalscope);
             asttree.accept(jp);
+
             System.out.println("Type Check Passed!");
         } catch (TypeCheckException e) {
             System.err.println("TypeCheckError: " + e.getMessage());

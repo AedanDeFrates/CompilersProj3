@@ -1,5 +1,6 @@
 package Typecheck.SymbolTable;
 import Typecheck.TypeCheckException;
+import java.util.stream.Collectors;
 
 import java.util.HashMap;
 
@@ -18,10 +19,33 @@ public class Scope {
         this.bindings = new HashMap<>();
     }
 
+    @Override
+    public String toString(){
+
+        String result = bindings.entrySet().stream()
+                .map(entry -> entry.getKey() + " = " + entry.getValue())
+                .collect(Collectors.joining(",\n\t", "{\n\t", "\n}\n"));
+        return result;
+
+    }
+
     private class SymbolBucket {
         VarSymbol var;
         FunSymbol fun;
         TypeSymbol type;
+
+        @Override
+        public String toString(){
+            StringBuilder result = new StringBuilder("");
+            if(var!=null)
+                result.append(String.format("Var: %s\t",var.toString()));
+            if(fun!=null)
+                result.append(String.format("Func: %s\t",fun.toString()));
+            if(type!=null)
+                result.append(String.format("Type: %s\t",type.toString()));
+            result.append("\b");
+            return result.toString();
+        }
     }
 
     private SymbolBucket locallookup(String n) {

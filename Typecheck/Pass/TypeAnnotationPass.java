@@ -55,8 +55,6 @@ public class TypeAnnotationPass extends Pass<Void> {
                   node.name.equals("void") ? new VOID() :
                   new ALIAS(node.name);
 
-      //Might need to assign a real type value to an Alias here, maybe this is done later in typescope pass
-
       //Wrap in POINTER if necessary
        //loop to account for multiple pointers
       if(node.pointerCount>0){

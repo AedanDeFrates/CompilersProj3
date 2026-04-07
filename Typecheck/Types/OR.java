@@ -36,9 +36,9 @@ public class OR extends Type {
 
    public String toString() {
       String ret = "";
-      ret += ("OR(\n");
+      ret += ("OR(");
       for (Type t: this.options) {
-         ret += ("\t" + t.toString() + "\n");
+         ret += (", " + t.toString());
       }
       ret += (")");
       return ret;

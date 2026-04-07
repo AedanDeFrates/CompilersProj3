@@ -12,5 +12,10 @@ public class VarSymbol extends Symbol {
       this.type = t;
    }
 
+   @Override
+   public String toString(){
+      return type.toString();
+   }
+
 
 }

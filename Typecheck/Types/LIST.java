@@ -32,9 +32,9 @@ public class LIST extends Type {
 
    public String toString() {
       String ret = "";
-      ret += ("LIST(\n");
+      ret += ("LIST(");
       for (Type t: this.typelist) {
-         ret += ("\t" + t.toString() + "\n");
+         ret += (", " + t.toString() + "");
       }
       ret += (")");
       return ret;

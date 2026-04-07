@@ -35,7 +35,7 @@ public class ALIAS extends Type {
    }
 
    public String toString() {
-      return ("ALIAS(\n"+this.type+"\n)");
+      return ("ALIAS("+this.type+")");
    }
 
 }

@@ -2,6 +2,7 @@ package Typecheck.Pass;
 import Typecheck.Types.*;
 import Typecheck.SymbolTable.*;
 import java.util.ArrayList;
+import Typecheck.TypeCheckException;
 
 public class TypeScopePass extends ScopePass<Void> {
 
@@ -96,16 +97,41 @@ public class TypeScopePass extends ScopePass<Void> {
    // look up the type of the alias in the symbol table.
       // This is a function I found helpful to implement. If you have a solution
       // in mind that does not include a helper function, then feel free to ignore
-   private void resolveAlias(Type type) 
+   private void resolveAliases(Type t)
    {
-
+      if (t instanceof ALIAS) {
+         ALIAS alias = (ALIAS) t;
+         if (alias.name != null && currentscope.hasType(alias.name)) {
+            Type resolved = currentscope.getType(alias.name).type;
+            alias.setType(resolved);
+            // Recursively resolve the inner type too
+            resolveAliases(resolved);
+         } else {
+            throw new TypeCheckException("Unknown type: " + (t instanceof ALIAS ? ((ALIAS)t).name : t));
+         }
+      } else if (t instanceof ARRAY) {
+         resolveAliases(((ARRAY) t).type);
+      } else if (t instanceof POINTER) {
+         resolveAliases(((POINTER) t).type);
+      } else if (t instanceof LIST) {
+         for (Type elem : ((LIST) t).typelist) {
+            resolveAliases(elem);
+         }
+      } else if (t instanceof OR) {
+         for (Type opt : ((OR) t).options) {
+            resolveAliases(opt);
+         }
+      }
+      // INT, STRING, VOID need no resolution
    }
 
    // Hint: Visit the brackets and resolve the alias to a type (if the typeAnnotation contains ALIAS)
    @Override
    public Void visitType(Absyn.Type node) 
    {
-		return null;
+      visit(node.brackets);
+      resolveAliases(node.typeAnnotation);
+      return null;
    }
 
 }

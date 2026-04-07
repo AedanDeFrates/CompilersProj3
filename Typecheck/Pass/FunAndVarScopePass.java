@@ -59,7 +59,7 @@ public class FunAndVarScopePass extends ScopePass<Void> {
 
       // 3.
       LIST paramsList = new LIST(paramTypes);
-      Typecheck.SymbolTable.FunSymbol sym = new Typecheck.SymbolTable.FunSymbol(node.name, paramsList, node.typeAnnotation);
+      Typecheck.SymbolTable.FunSymbol sym = new Typecheck.SymbolTable.FunSymbol(node.name, paramsList, node.type.typeAnnotation);
 
       // 4.
       this.currentscope.addFun(node.name, sym);
