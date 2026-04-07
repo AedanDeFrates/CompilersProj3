@@ -16,7 +16,7 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitStructDecl(Absyn.StructDecl node) 
    {
-      System.out.println("TYPE_SCOPE_PASS visitStructDecl\n" + "   " + node.name);
+      System.out.println("visitStructDecl\n" + "   " + node.name);
       // 1.
       for(Absyn.Decl d: node.body.list)
       {
@@ -38,8 +38,8 @@ public class TypeScopePass extends ScopePass<Void> {
       LIST structDecl = new LIST(typeAnnotationList);
       
       // 4.
-      VarSymbol sym = new VarSymbol(node.name, structDecl);
-      this.currentscope.addVar(node.name, sym);
+      TypeSymbol sym = new TypeSymbol(node.name, structDecl);
+      this.currentscope.addType(node.name, sym);
 
 		return null;
    }
@@ -51,7 +51,7 @@ public class TypeScopePass extends ScopePass<Void> {
    @Override
 	public Void visitUnionDecl(Absyn.UnionDecl node) 
    {
-      System.out.println("TYPE_SCOPE_PASS visitUnionDecl\n" + "   " + node.name);
+      System.out.println("visitUnionDecl\n" + "   " + node.name);
       // 1.
       for(Absyn.Decl d : node.body.list)
       {
@@ -73,8 +73,8 @@ public class TypeScopePass extends ScopePass<Void> {
       OR orDecl = new OR(typeAnnotationList);
 
       // 4.
-      VarSymbol sym = new VarSymbol(node.name, orDecl);
-      this.currentscope.addVar(node.name, sym);
+      TypeSymbol sym = new TypeSymbol(node.name, orDecl);
+      this.currentscope.addType(node.name, sym);
 
       return null;
    }
@@ -85,8 +85,8 @@ public class TypeScopePass extends ScopePass<Void> {
 	public Void visitTypedef(Absyn.Typedef node)
    {
       visit(node.type);
-      VarSymbol sym = new VarSymbol(node.name, node.type.typeAnnotation);
-      this.currentscope.addVar(node.name, sym);
+      TypeSymbol sym = new TypeSymbol(node.name, node.type.typeAnnotation);
+      this.currentscope.addType(node.name, sym);
 		return null;
 	}
 

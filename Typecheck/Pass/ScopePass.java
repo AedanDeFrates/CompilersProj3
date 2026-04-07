@@ -22,7 +22,7 @@ public class ScopePass<T> extends Pass<T> {
    public T visitFunDecl(FunDecl node) 
    {
 	// 1.
-	Scope prevScope = new Scope(currentscope);
+	Scope prevScope = currentscope;
 	currentscope = node.scope;
 
 	System.out.println("SCOPE_PASS visitFunDecl\n   " + node.name);

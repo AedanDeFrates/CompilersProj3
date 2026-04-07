@@ -9,9 +9,9 @@ public class TypeAnnotationPass extends Pass<Void> {
 
    // NOTES:
    // This pass assigns Typecheck.Type classes to the typeAnnotation field of the parent Absyn class
-   // foreach node in the AST that is a variable decleration.
+   // foreach node in the AST that is a variable declaration.
    // POINTER,LIST,ARRAY are compound types, POINTERs are of a specific type,
-   // and ARRAYs and LISTs are mutlidimensional.
+   // and ARRAYs and LISTs are mutli-dimensional.
 
     // Hint: Build the base type from the name, then wrap it for pointers and any [] modifiers.
     // 1. Construct the base type ("string" -> STRING)
@@ -38,7 +38,7 @@ public class TypeAnnotationPass extends Pass<Void> {
    @Override
    public Void visitType(Absyn.Type node) {
 
-      System.out.println("TYPE_ANNOTATION_PASS\n   " + node.name);
+      System.out.println("visitType");
       
        // Here is how I checked if the type needed ARRAY or a LIST:
        // Feel free to use it or change it. 
@@ -58,8 +58,11 @@ public class TypeAnnotationPass extends Pass<Void> {
       //Might need to assign a real type value to an Alias here, maybe this is done later in typescope pass
 
       //Wrap in POINTER if necessary
+       //loop to account for multiple pointers
       if(node.pointerCount>0){
-         basetype = (Type) new POINTER(basetype);
+          for (int i = 0; i < node.pointerCount; i++) {
+              basetype = new POINTER(basetype);
+          }
       }
 
      if(isARRAY){
