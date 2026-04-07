@@ -72,9 +72,9 @@ public class JudgementsPass extends ScopePass<Void> {
       resolveAliases(declared);
       resolveAliases(actual);
 
-      //check if both sides are lists
+      //check if both sides are lists, if so go through each element and compare them
       if (declared instanceof LIST && actual instanceof LIST) {
-         //cast them to list
+         //cast them to list (need this to use typelist)
          LIST d = (LIST) declared;
          LIST a = (LIST) actual;
          //then check the size of each list (make sure they have the same number of elements)
@@ -92,12 +92,13 @@ public class JudgementsPass extends ScopePass<Void> {
       }
 
       // if the declared is an array and the actual is a list
+      // check that the initializer can match some concrete array dimensions.
       if (declared instanceof ARRAY && actual instanceof LIST) {
          //cast them to array and list
          ARRAY arr = (ARRAY) declared;
          LIST list = (LIST) actual;
 
-         //goes through every element to see if it matches the array type
+         //go through every element to see if it matches the array's inner type
          for (Type elem : list.typelist) {
             if (!matchesListSize(arr.type, elem)) {
                return false;
