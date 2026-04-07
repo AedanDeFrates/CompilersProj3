@@ -1,6 +1,11 @@
-// Fails
+//Succeeds
+fun int success() {
+    if (1) {return 0;}
+    return 1;
+}
 
-fun int main() {
-    if (s) {return 0;}
+// Fails
+fun int fail() {
+    if (1) {return 0;}
     return 1;
 }

@@ -5,4 +5,4 @@ int y;
 // Would Type Check
 var myStruct s = {{{1,2},{1,2}},1};
 // Would not Type Check
-myStruct s = {1,2};
+var myStruct t = {1,2};

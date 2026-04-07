@@ -309,6 +309,9 @@ public class JudgementsPass extends ScopePass<Void> {
    @Override
    public Void visitFunDecl(Absyn.FunDecl node)
    {
+      Scope prevScope = currentscope;
+      currentscope = node.scope;
+
       System.out.println("JUDGEMENT_PASS visitFunDecl\n   " + node.name);
       // Rule 11:
       if (this.currentscope.hasVar(node.name))
@@ -319,12 +322,19 @@ public class JudgementsPass extends ScopePass<Void> {
       visit(node.params);
       visit(node.body);
 
+      currentscope = prevScope;
+
       return null;
    }
 
    @Override
    public Void visitWhileStmt(WhileStmt node)
    {
+      Scope prevScope = currentscope;
+      currentscope = node.scope;
+
+      System.out.println("JUDGEMENT_PASS visitIfStmt\n IF");
+
       // RULE 13:
       if(node.expression.typeAnnotation == null)
       {
@@ -334,12 +344,23 @@ public class JudgementsPass extends ScopePass<Void> {
       {
          throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
       }
+
+      visit(node.expression);
+      visit(node.statement);
+
+      currentscope = prevScope;
+
       return null;
    }
    @Override
 
    public Void visitIfStmt(IfStmt node)
    {
+      Scope prevScope = currentscope;
+      currentscope = node.scope;
+
+      System.out.println("JUDGEMENT_PASS visitIfStmt\n IF");
+
       // RULE 13:
       if(node.expression.typeAnnotation == null)
       {
@@ -349,6 +370,13 @@ public class JudgementsPass extends ScopePass<Void> {
       {
          throw new TypeCheckException("Invalid Expression Type when IF expects INT");
       }
+
+      visit(node.if_statement);
+      visit(node.else_statement);
+      visit(node.expression);
+
+      currentscope = prevScope;
+
       return null;
    }
 
