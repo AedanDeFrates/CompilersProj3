@@ -6,6 +6,6 @@ fun int success() {
 
 // Fails
 fun int fail() {
-    if (1) {return 0;}
+    if ("hello") {return 0;}
     return 1;
 }
