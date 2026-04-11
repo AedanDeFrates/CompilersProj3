@@ -1,17 +1,11 @@
 var string* p = 100;
-// Passes
-var string pstring = p*;
-var string s = "Example"
-// Fails
-var int x = &s;
-// Passes
-var string* y = &s;
+var string s = "Example";
 
-// Top Scope
-var int x = 0;
-var string y = "";
-fun int main() {
-// Function main scope
-fun int example() {}
-}
-fun int example() {}
+// Passes
+var string pstring = *p;
+var string* x = &s;
+
+// Fails
+//var int y = &s;
+var int* z = &s;
+

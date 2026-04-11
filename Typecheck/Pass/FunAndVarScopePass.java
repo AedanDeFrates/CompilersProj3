@@ -65,11 +65,16 @@ public class FunAndVarScopePass extends ScopePass<Void> {
       this.currentscope.addFun(node.name, sym);
 
       // 5.
-      Scope oldScope = this.currentscope;
+      /*Scope oldScope = this.currentscope;
       this.currentscope = node.scope;
       node.params.accept(this);
       node.body.accept(this);
-      this.currentscope = oldScope;
+      this.currentscope = oldScope;*/
+
+      switchScope(node,()->{
+         visit(node.params);
+         visit(node.body);
+      });
 
       return null;
    }
