@@ -1,9 +1,11 @@
 var string* p = 100;
-// Passes
-//var string pstring = *p;
 var string s = "Example";
+
 // Passes
-var string* y = &s;
+var string pstring = *p;
+var string* x = &s;
+
 // Fails
-var int x = &s;
+//var int y = &s;
+var int* z = &s;
 

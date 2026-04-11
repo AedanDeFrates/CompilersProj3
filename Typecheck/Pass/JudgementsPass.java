@@ -15,50 +15,14 @@ public class JudgementsPass extends ScopePass<Void> {
       super(s);
    }
 
-   // Recursively resolve ALIAS types by looking them up in the scope.
-   // After this, ALIAS.canAccept() will work because setType() has been called.
-   private void resolveAliases(Type t) {
-      if (t instanceof ALIAS) {
-         ALIAS alias = (ALIAS) t;
-         if (alias.name != null && currentscope.hasType(alias.name)) {
-            Type resolved = currentscope.getType(alias.name).type;
-            alias.setType(resolved);
-            // Recursively resolve the inner type too
-            resolveAliases(resolved);
-         } else {
-            throw new TypeCheckException("Unknown type: " + (t instanceof ALIAS ? ((ALIAS)t).name : t));
-         }
-      } else if (t instanceof ARRAY) {
-         resolveAliases(((ARRAY) t).type);
-      } else if (t instanceof POINTER) {
-         resolveAliases(((POINTER) t).type);
-      } else if (t instanceof LIST) {
-         for (Type elem : ((LIST) t).typelist) {
-            resolveAliases(elem);
-         }
-      } else if (t instanceof OR) {
-         for (Type opt : ((OR) t).options) {
-            resolveAliases(opt);
-         }
-      }
-      // INT, STRING, VOID need no resolution
-   }
 
    //check if the type is a number
-   // first checks if type is null and then uses resolveAliases to check what type it is if it isn't null
-   // returns true if int or pointer (pointers count as numbers)
    private boolean isNumber(Type t){
       if (t == null) {
-         return false;
-      } else {
-         resolveAliases(t);
-         if (t instanceof INT || t instanceof POINTER){
-            return true;
-         }
-         else {
-            return false;
-         }
+         throw new TypeCheckException("Type is null");
       }
+
+      return (t instanceof INT || t instanceof POINTER);
    }
 
 
@@ -67,10 +31,6 @@ public class JudgementsPass extends ScopePass<Void> {
    private boolean matchesListSize(Type declared, Type actual) {
       //check to make sure both types exist
       if (declared == null || actual == null) return false;
-
-      //call resolveAliases for both to get the type each represent so we can compare them
-      resolveAliases(declared);
-      resolveAliases(actual);
 
       //check if both sides are lists, if so go through each element and compare them
       if (declared instanceof LIST && actual instanceof LIST) {
@@ -122,6 +82,7 @@ public class JudgementsPass extends ScopePass<Void> {
       return declared.canAccept(actual);
    }
 
+
    // Compute the Typecheck.Types.Type of an expression.
    private Type typeOf(Absyn.Exp e) {
       if (e instanceof Absyn.EmptyExp) return null;
@@ -134,11 +95,11 @@ public class JudgementsPass extends ScopePass<Void> {
             if (subType == null) {
                throw new TypeCheckException("Could not determine list element type");
             }
-            resolveAliases(subType);
             types.add(subType);
          }
          return new LIST(types);
       }
+      // Rule 12: Any type T used in the program must be a valid type in the Scope
       if (e instanceof Absyn.ID) {
          String name = ((Absyn.ID) e).value;
          if (currentscope.hasVar(name)) {
@@ -156,8 +117,6 @@ public class JudgementsPass extends ScopePass<Void> {
          if (leftT == null || rightT == null){
             throw new TypeCheckException("Couldn't determine assignment types.");
          }
-         resolveAliases(leftT);
-         resolveAliases(rightT);
          if (!leftT.canAccept(rightT)) {
             throw new TypeCheckException("Invalid assignment");
          }
@@ -177,6 +136,31 @@ public class JudgementsPass extends ScopePass<Void> {
             throw new TypeCheckException("Binary operator '" + b.oper + "' requires both factors to be a numeric value.");
          }
          return new INT();
+      }
+
+      //Rule 14 Unary operations all take numbers and return numbers except:
+      //    * takes a pointer, *p evaluates to a underlying type of the pointer.
+      //    & takes any term and evaluates to a pointer of that type
+      if(e instanceof Absyn.UnaryExp){
+         Absyn.UnaryExp u = (Absyn.UnaryExp) e;
+         Type expType = typeOf(u.exp);
+
+         if(u.prefix.equals("*")) {
+            if (!(expType instanceof POINTER)) {
+               throw new TypeCheckException("Unary operator '" + u.prefix + "' requires a pointer value.");
+            }
+            return ((POINTER)(expType)).type;
+         }
+
+         if (u.prefix.equals("&")){
+            return new POINTER(expType);
+         }
+
+         if(!isNumber(expType)){
+            throw new TypeCheckException("Unary operator '" + u.prefix + "' requires a numeric value.");
+         }
+
+         return expType;
       }
 
       //Rule 9: function application must match parameter type and evaluate to expression of the return type
@@ -202,7 +186,6 @@ public class JudgementsPass extends ScopePass<Void> {
                        "Could not determine type of argument for '" + fname + "'"
                );
             }
-            resolveAliases(t);
             arTypes.add(t);
          }
 
@@ -210,9 +193,6 @@ public class JudgementsPass extends ScopePass<Void> {
          LIST actuals = new LIST(arTypes);
          LIST formals = fs.params;
          Type retType = fs.returnType;
-
-         resolveAliases(formals);
-         resolveAliases(retType);
 
          if (!formals.canAccept(actuals)) {
             throw new TypeCheckException(
@@ -234,13 +214,11 @@ public class JudgementsPass extends ScopePass<Void> {
    // Rule 4: Structs must be initialized with a list matching their members
    @Override
    public Void visitVarDecl(Absyn.VarDecl node) {
+
       Type declaredType = node.type.typeAnnotation;
-
       if (declaredType == null) {
-         return null;
+         throw new TypeCheckException("Var " + node.name + " has null type");
       }
-
-      resolveAliases(declaredType);
 
       Absyn.Exp init = node.init;
 
@@ -253,19 +231,12 @@ public class JudgementsPass extends ScopePass<Void> {
          return null;
       }
 
-
-      // Resolve any ALIAS types (e.g., struct/union names) before calling canAccept
-
-
-      // Compute the type of the initializer expression
       Type initType = typeOf(init);
       if (initType == null) {
          throw new TypeCheckException(
                  "Could not determine initializer type for '" + node.name + "'"
          );
-
       }
-      resolveAliases(initType);
 
       // Rule 5: unions cannot be initialized with a list
       // unions are initialized with a single value that type-checks as one of its members
@@ -289,7 +260,7 @@ public class JudgementsPass extends ScopePass<Void> {
       //   Rule 1: INT.canAccept(STRING) == false, STRING.canAccept(INT) == false
       //   Rule 2: POINTER.canAccept(INT) == true, INT.canAccept(POINTER) == true
       //   Rule 3: LIST.canAccept(LIST) checks size + element types
-      //   Rule 4: resolved struct LIST.canAccept(init LIST) checks member types
+      //   Rule 4: struct LIST.canAccept(init LIST) checks member types
       if (!declaredType.canAccept(initType)) {
          throw new TypeCheckException(
                  "Type mismatch in declaration of '" + node.name + "': " +
@@ -309,76 +280,55 @@ public class JudgementsPass extends ScopePass<Void> {
    @Override
    public Void visitFunDecl(Absyn.FunDecl node)
    {
-      Scope prevScope = currentscope;
-      currentscope = node.scope;
-
       System.out.println("JUDGEMENT_PASS visitFunDecl\n   " + node.name);
-      // Rule 11:
-      if (this.currentscope.hasVar(node.name))
-      {
-         throw new TypeCheckException("Tried to define fun ("+node.name+") but var with same name already exists");
-      }
+      switchScope(node,()->{
+         // Rule 11:
+         if (this.currentscope.hasVar(node.name))
+         {
+            throw new TypeCheckException("Tried to define fun ("+node.name+") but var with same name already exists");
+         }
 
-      visit(node.params);
-      visit(node.body);
+         visit(node.params);
+         visit(node.body);
 
-      currentscope = prevScope;
-
+      });
       return null;
    }
 
    @Override
    public Void visitWhileStmt(WhileStmt node)
    {
-      Scope prevScope = currentscope;
-      currentscope = node.scope;
-
       System.out.println("JUDGEMENT_PASS visitIfStmt\n IF");
 
-      // RULE 13:
-      if(node.expression.typeAnnotation == null)
-      {
-         throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
-      }
-      if(!(new INT().canAccept(node.expression.typeAnnotation)))
-      {
-         throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
-      }
+      switchScope(node,()->{
+         // RULE 13:
+         if(!isNumber(typeOf(node.expression))) {
+            throw new TypeCheckException("Invalid Expression Type when WHILE expects INT");
+         }
 
-      visit(node.expression);
-      visit(node.statement);
-
-      currentscope = prevScope;
-
+         visit(node.expression);
+         visit(node.statement);
+      });
       return null;
    }
-   @Override
 
+
+   @Override
    public Void visitIfStmt(IfStmt node)
    {
-      Scope prevScope = currentscope;
-      currentscope = node.scope;
-
       System.out.println("JUDGEMENT_PASS visitIfStmt\n IF");
 
-      // RULE 13:
-      if(node.expression.typeAnnotation == null)
-      {
-         throw new TypeCheckException("Invalid Expression Type when IF expects INT");
-      }
-      if(!(new INT().canAccept(node.expression.typeAnnotation)))
-      {
-         throw new TypeCheckException("Invalid Expression Type when IF expects INT");
-      }
+      switchScope(node, ()->{
+         // RULE 13:
+         if(!isNumber(typeOf(node.expression))) {
+            throw new TypeCheckException("Invalid Expression Type when IF expects INT");
+         }
 
-      visit(node.if_statement);
-      visit(node.else_statement);
-      visit(node.expression);
-
-      currentscope = prevScope;
-
+         visit(node.if_statement);
+         visit(node.else_statement);
+         visit(node.expression);
+      });
       return null;
    }
-
 
 }

@@ -18,87 +18,73 @@ public class ScopePass<T> extends Pass<T> {
    // 2. visit the children (body, params, members, etc) inside the new scope
    // 3. restore the previous scope
 
+	// wrapper function that switches scope for you
+	public void switchScope(Absyn node, Runnable func){
+		// 1.
+		Scope prevScope = currentscope;
+		currentscope = node.scope;
+
+		//2 visit children and custom logic here
+		func.run();
+
+		// 3.
+		currentscope = prevScope;
+	}
+
+
    @Override
    public T visitFunDecl(FunDecl node) 
    {
-	// 1.
-	Scope prevScope = currentscope;
-	currentscope = node.scope;
-
-	System.out.println("SCOPE_PASS visitFunDecl\n   " + node.name);
-
-	// 2.
-	visit(node.params);
-	visit(node.body);
-
-	// 3.
-	currentscope = prevScope;
-
-	return null;
+		System.out.println("SCOPE_PASS visitFunDecl\n   " + node.name);
+		switchScope(node, () -> {
+			visit(node.type);
+			visit(node.params);
+			visit(node.body);
+		});
+		return null;
    }
 
    //PATTERN REPEATS FOR REMAINING FUNCTIONS
    @Override
 	public T visitStructDecl(StructDecl node) 
 	{
-		Scope prevScope = currentscope;
-		currentscope = node.scope;
-
 		System.out.println("SCOPE_PASS visitStructDecl\n   " + node.name);
-	   	
-		visit(node.body);
-
-		currentscope = prevScope;
-
-
+		switchScope(node,()->{
+			visit(node.body);
+		});
 		return null;
 	}
 
 	@Override
-
 	public T visitUnionDecl(UnionDecl node) 
 	{
-		Scope prevScope = currentscope;
-		currentscope = node.scope;
-
 		System.out.println("SCOPE_PASS visitUnionDecl\n   " + node.name);
-		visit(node.body);
-
-		currentscope = prevScope;
-
+		switchScope(node,()->{
+			visit(node.body);
+		});
 		return null;
 	}
 
 	@Override
 	public T visitIfStmt(IfStmt node) 
 	{
-		Scope prevScope = currentscope;
-		currentscope = node.scope;
-
-		visit(node.if_statement);
-		visit(node.else_statement);
-		visit(node.expression);
-
 		System.out.println("SCOPE_PASS visitIfStmt\n   IF");
-	   	
-		currentscope = prevScope;
-
+		switchScope(node,()->{
+			visit(node.if_statement);
+			visit(node.else_statement);
+			visit(node.expression);
+		});
 		return null;
 	}
 
    @Override
 	public T visitWhileStmt(WhileStmt node) 
 	{
-		Scope prevScope = currentscope;
-		currentscope = node.scope;
-
-		visit(node.expression);
-		visit(node.statement);
-
 		System.out.println("SCOPE_PASS visitWhileStmt\n   WHILE");
-
-		currentscope = prevScope;
-	   	
+		switchScope(node,()->{
+			visit(node.expression);
+			visit(node.statement);
+		});
 	   return null;
 	}
 

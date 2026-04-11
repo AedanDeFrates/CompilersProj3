@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import Absyn.IfStmt;
 import Absyn.WhileStmt;
 
-// This pass implements the type rules.
-// Some of the logic has been implemented for you in the Types.
-// Check out the "canAccept" functions.
+
 public class PrintPass extends ScopePass<Void> {
     public PrintPass(Scope s) {
         super(s);
